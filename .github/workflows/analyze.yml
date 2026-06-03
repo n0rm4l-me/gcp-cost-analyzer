@@ -1,0 +1,52 @@
+name: GCP Cost Analysis
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Every Monday 09:00 UTC
+  workflow_dispatch:      # Manual trigger
+    inputs:
+      days:
+        description: 'Number of days to analyze'
+        default: '30'
+      project_id:
+        description: 'GCP Project ID (optional)'
+        default: ''
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Run cost analysis
+        env:
+          GCP_BILLING_ACCOUNT_ID: ${{ secrets.GCP_BILLING_ACCOUNT_ID }}
+          GCP_PROJECT_ID: ${{ inputs.project_id || secrets.GCP_PROJECT_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python -m src.main \
+            --days ${{ inputs.days || '30' }} \
+            --output-dir reports
+
+      - name: Commit report
+        run: |
+          git config user.name "gcp-cost-analyzer[bot]"
+          git config user.email "bot@users.noreply.github.com"
+          git add reports/
+          git diff --staged --quiet || git commit -m "chore: cost report $(date +%Y-%m-%d)"
+          git push

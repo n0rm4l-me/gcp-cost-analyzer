@@ -1,0 +1,9 @@
+.env
+.DS_Store
+*.json
+!.env.example
+.venv/
+__pycache__/
+*.pyc
+reports/*.md
+!reports/.gitkeep

@@ -1,0 +1,8 @@
+google-cloud-billing>=1.19.0
+google-cloud-compute>=1.18.0
+google-cloud-monitoring>=2.22.0
+google-api-python-client>=2.131.0
+google-auth>=2.29.0
+google-auth-httplib2>=0.2.0
+httplib2>=0.22.0
+google-generativeai>=0.7.0
