@@ -3,7 +3,7 @@ name: GCP Cost Analysis
 on:
   schedule:
     - cron: '0 9 * * 1'  # Every Monday 09:00 UTC
-  workflow_dispatch:      # Manual trigger
+  workflow_dispatch:      # Manual trigger via GitHub UI
     inputs:
       days:
         description: 'Number of days to analyze'
